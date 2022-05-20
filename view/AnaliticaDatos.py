@@ -50,7 +50,7 @@ def grifica_criterios( st, controller, criterio_controler, notas, nombres ):
     cantidad = controller.contar_calificados()
     numeros_criterio = criterio_controler.lista_numero_criterios()
     notas = criterio_controler.arreglo_criterios()
-    controller.promedio_notas_criterios( notas, cantidad )
+    controller.promedio_notas_criterios( notas, cantidad, criterio_controler )
     #crea e imprime tabla
     fig = plt.figure(figsize=(10, 5))
     plt.bar(numeros_criterio, notas)

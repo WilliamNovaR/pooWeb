@@ -11,6 +11,7 @@ def listar_actas(st, criterios_controller, acta_controller):
             st.subheader("Numero de acta: " + pdf.num_acta)
             st.subheader("Fecha: " + pdf.fecha)
             st.subheader("Nombre autor: " + pdf.autor)
+            st.subheader( "Titulo" + pdf.titulo )
             st.subheader("Nota: " + pdf.calificacion_final)
             if float(pdf.calificacion_final) > 3.5:
                 st.success("Aprobado")

@@ -116,11 +116,12 @@ class EvaluadorController:
                 cantidad += 1
         return cantidad
 
-    def promedio_notas_criterios(self, notas, cantidad):
+    def promedio_notas_criterios(self, notas, cantidad, criterios_controller):
         # recorre cada una de las calificaciones y realiza la sumatoria de la nota de cada criterio por estudiante
         for i in self.evaluaciones:
             for j in range(len(i.calificacion)):
-                notas[j] += i.calificacion[j].nota_final
+                if j <= len( criterios_controller.criterios )
+                    notas[j] += i.calificacion[j].nota_final
         # saca el promedio de las notas
         for k in range(len(notas)):
             if cantidad > 0:
