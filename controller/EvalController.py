@@ -120,7 +120,7 @@ class EvaluadorController:
         # recorre cada una de las calificaciones y realiza la sumatoria de la nota de cada criterio por estudiante
         for i in self.evaluaciones:
             for j in range(len(i.calificacion)):
-                if j <= len( criterios_controller.criterios )
+                if j <= len( criterios_controller.criterios ):
                     notas[j] += i.calificacion[j].nota_final
         # saca el promedio de las notas
         for k in range(len(notas)):
