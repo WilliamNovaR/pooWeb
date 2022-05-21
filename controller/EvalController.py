@@ -108,21 +108,28 @@ class EvaluadorController:
                 notas.append(i.nota)
         return notas
 
-    def contar_calificados(self):
-        cantidad = 0
-        # cuenta el numero de estudiates calificados
-        for personas in self.evaluaciones:
-            if len(personas.calificacion) > 0:
-                cantidad += 1
+    def cantidad(self, criterios_controller):
+        cantidad = []
+        for i in range( len(criterios_controller.criterios) ):
+            cantidad.append(0)
+        for j in range( len(self.evaluaciones) ):
+            for k in range( len( self.evaluaciones[j].calificacion ) ):
+                if k < len(criterios_controller.criterios):
+                    if  self.evaluaciones[j].calificacion[k].id_criterio == criterios_controller.criterios[k].identificador:
+                        cantidad[k] +=1
         return cantidad
 
-    def promedio_notas_criterios(self, notas, cantidad, criterios_controller):
-        # recorre cada una de las calificaciones y realiza la sumatoria de la nota de cada criterio por estudiante
-        for i in self.evaluaciones:
-            for j in range(len(i.calificacion)):
-                if j <= len( criterios_controller.criterios ):
-                    notas[j] += i.calificacion[j].nota_final
-        # saca el promedio de las notas
+    def promedio_notas_criterios(self, notas, cantidad, nombres):
+        for i in range(len(self.evaluaciones)):
+            for j in range( len( nombres ) ):
+                if j < len(self.evaluaciones[i].calificacion) and len(self.evaluaciones[i].calificacion) > 0 :
+                    if nombres[j] == self.evaluaciones[i].calificacion[j].id_criterio:
+                        notas[j] += self.evaluaciones[i].calificacion[j].nota_final
+
+
+
         for k in range(len(notas)):
-            if cantidad > 0:
-                notas[k] /= cantidad
+            if cantidad[k] == 0:
+                notas[k] = 0
+            else:
+                notas[k] /= cantidad[k]

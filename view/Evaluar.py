@@ -26,18 +26,20 @@ def agregar_evaluacion(st, controller, criterios_controller):
                 lista_calificaciones[i].numero_jurados = 2
                 lista_calificaciones[i].id_criterio = criterios_controller.criterios[i].identificador
                 lista_calificaciones[i].ponderacion = criterios_controller.criterios[i].porcentaje_ponderacion
-            contador = 200
             #lee los datos de calificacion de los criterios
+            contador = 21
             for j in range(len(lista_calificaciones)):
+                contador = 2010 + (j + 1)**2
                 st.subheader("Criterio " + lista_calificaciones[j].id_criterio)
-                lista_calificaciones[j].nota_jurado1 = st.number_input("Nota jurado 1:", key= contador * 2,
+                lista_calificaciones[j].nota_jurado1 = st.number_input("Nota jurado 1:", key= ( 2 + j),
                                                                        min_value=nota_minima, max_value=nota_maxima)
-                contador *= 7
-                lista_calificaciones[j].nota_jurado2 = st.number_input("Nota jurado 2:", key=j, min_value=nota_minima,
+                contador *= 7 + j
+                lista_calificaciones[j].nota_jurado2 = st.number_input("Nota jurado 2:", key=j * (j + contador ), min_value=nota_minima,
                                                                        max_value=nota_maxima)
                 lista_calificaciones[j].nota_final = lista_calificaciones[j].establecer_nota_final(lista_calificaciones[j].nota_jurado1, lista_calificaciones[j].nota_jurado2, lista_calificaciones[j].numero_jurados )
-                lista_calificaciones[j].comentario = st.text_input("Comentario:", key=(j + 1) * 30, )
+                lista_calificaciones[j].comentario = st.text_input("Comentario:", key=(j + contador) * 30, )
                 evaluacion_obj.nota = evaluacion_obj.establecer_nota(lista_calificaciones[j].nota_final, lista_calificaciones[j].ponderacion, evaluacion_obj.nota ) # se calcula la nota
+                contador += 2
             evaluacion_obj.nota = 0 ##revisaaaaa!!!!!!
             for j in range(len(lista_calificaciones)):
                 evaluacion_obj.nota = evaluacion_obj.establecer_nota(lista_calificaciones[j].nota_final, lista_calificaciones[j].ponderacion, evaluacion_obj.nota ) # se calcula la nota
@@ -91,6 +93,7 @@ def seleccion( st, controller, criterios_controller ):
         editar_calificacion( st, controller, criterios, seleccionar_estudiantes )
 
 def listar_evaluacion(st, controller, criterios, seleccionar_estudiantes):
+    honorifico = 4.5
     for evaluacion in controller.evaluaciones:
         if seleccionar_estudiantes == evaluacion.nombre_autor: #comprueba que se va a ver los datos del estudiante seleccionado
             #imprime los datos
@@ -104,7 +107,7 @@ def listar_evaluacion(st, controller, criterios, seleccionar_estudiantes):
             st.subheader("Enfasis en: " + evaluacion.enfasis)
             st.subheader("Jurado1 : " + evaluacion.nombre_jurado1)
             st.subheader("Jurado2 : " + evaluacion.nombre_jurado2)
-            seleccionar_criterio = st.selectbox("Escoger criterio", criterios)
+            seleccionar_criterio = st.selectbox("Escoger criterio", criterios, key = int(evaluacion.id_estudiante) )
             #busca e imprime los datos del criterio seleccionado
             for i in evaluacion.calificacion:
                 if seleccionar_criterio == i.id_criterio:
@@ -117,15 +120,24 @@ def listar_evaluacion(st, controller, criterios, seleccionar_estudiantes):
             st.subheader("Nota final : " + str(evaluacion.nota))
             st.subheader("Comentario final : " + evaluacion.comentario_final)
             #revisa si la nota fue mayor a 4.5 para desplegar la obcion de recomendaciones y apreciaciones
-            if evaluacion.nota >= 4.5:
+            if evaluacion.nota >= honorifico:
                 st.subheader("Recomendación y apreciaciones: " + evaluacion.recomendacion)
 
 def editar_calificacion(st, controller, criterios, seleccionar_estudiantes):
+    flag = 0
     honorifico = 4.5 # carga la nota de honorifico
+    index = 0
+    respaldo = None
     #en caso de escoger la opcion editar permite cambiar los valores del estudiante y sus calificaciones
     for evaluacion in controller.evaluaciones:
         if seleccionar_estudiantes == evaluacion.nombre_autor:
+            respaldo == evaluacion
             evaluacion.id_estudiante = st.text_input("Id estudiante", value=evaluacion.id_estudiante)
+            for i in range(len(controller.evaluaciones)):
+                print(controller.evaluaciones[i].id_estudiante)
+                if controller.evaluaciones[i].id_estudiante == evaluacion.id_estudiante and i != index:
+
+                    flag = 1
             evaluacion.periodo = st.text_input("Periodo de evaluacion", value=evaluacion.periodo)
             evaluacion.nombre_autor = st.text_input("Nombre del autor", value=evaluacion.nombre_autor)
             #este if sirve para saber cual es el valor con el que se guardo para que a la hora de editar esta dato sea el seleccionado
@@ -164,9 +176,16 @@ def editar_calificacion(st, controller, criterios, seleccionar_estudiantes):
             if evaluacion.nota >= honorifico: #mira si debe desplegar la opcion de los trabjos con nota mayor a 4.5
                 st.subheader( "Recomendaciones honorificos" )
                 evaluacion.recomendacion = st.text_input("Recomendación y apreciaciones: ",
-                                                                     value=evaluacion.recomendacion)
-    enviar_btn = st.button("Editar", key = 2 * 11 )
-    if enviar_btn:
-        evaluacion.nota = round(evaluacion.nota, 1)
-        controller.cargar()
-        st.success("Cambio realizado")
+                                                             value=evaluacion.recomendacion)
+        index += 1
+    if flag == 1:
+        st.error( "Id repetida" )
+    else:
+        enviar_btn = st.button("Editar", key = 2 * 11 )
+        if enviar_btn and flag == 0:
+            evaluacion.nota = round(evaluacion.nota, 1)
+            controller.cargar()
+            st.success("Cambio realizado")
+
+
+
